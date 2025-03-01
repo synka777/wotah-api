@@ -6,3 +6,8 @@ from .serializers import PlantSerializer
 class PlantCreate(generics.ListCreateAPIView):
     queryset = Plant.objects.all() # What data we want to return
     serializer_class = PlantSerializer # Which serializer we want to use to return the data
+
+class PlantRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Plant.objects.all()
+    serializer_class = PlantSerializer
+    lookup_field = "pk"
