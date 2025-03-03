@@ -25,7 +25,10 @@ SECRET_KEY = "django-insecure-@x88h0g55r+-t^g@+j7_c(ejwk%oit2&e5+-f5%qqdmj5(c+4t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1"
+]
 
 
 # Application definition
@@ -52,6 +55,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# Authorize the local network to access the API
+MIDDLEWARE.insert(1, "api.middlewares.AllowLocalNetworkMiddleware")
 
 ROOT_URLCONF = "wotahapi.urls"
 
@@ -104,7 +110,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Refresh token lasts 7 days
     'ROTATE_REFRESH_TOKENS': True,  # Issue new refresh token upon use
     'BLACKLIST_AFTER_ROTATION': True,  # Blacklist old refresh tokens
-    'AUTH_HEADER_TYPES': ('Bearer',),  # Token format: Authorization: Bearer <token>
+    'AUTH_HEADER_TYPES': ('Bearer'),  # Token format: Authorization: Bearer <token>
 }
 
 REST_FRAMEWORK = {
@@ -114,12 +120,24 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',  # Default to authentication required
     ),
-    # "DEFAULT_RENDERER_CLASSES": (
-    #     "rest_framework.renderers.JSONRenderer",  # Disables HTML browsable API
-    # ),
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",  # Disables HTML browsable API
+    ),
 }
 
-# AUTH_USER_MODEL = 'api.User'  # This points to our custom user model
+# AUTH_USER_MODEL = 'api.User'  # This points to a custom user model
+
+# SMTP configuration
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # Print emails to the console
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = "email@gmail.com"
+# EMAIL_HOST_PASSWORD = "email-password-or-app-password"
+# DEFAULT_FROM_EMAIL = "email@gmail.com"
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

@@ -1,12 +1,22 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from .models import Plant
-from .serializers import PlantSerializer, UserRegistrationViewSerializer, PasswordResetSerializer
+from .serializers import (
+    PlantSerializer,
+    UserRegistrationViewSerializer,
+    PasswordResetSerializer,
+    PasswordResetRequestSerializer,
+    PasswordResetConfirmSerializer
+)
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from .validators import CustomPasswordValidator
+from rest_framework.views import APIView
+from django.core.mail import send_mail
 
 # Plant views
+
 class PlantListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated] # Still useful to have this here, even though we have it in settings.py
     queryset = Plant.objects.all()
@@ -47,7 +57,7 @@ class ResetPasswordView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]  # User must be logged in to reset their password
 
     def get_object(self):
-        """Return the logged-in user"""
+        # Return the logged-in user
         return self.request.user
 
     def update(self, request, *args, **kwargs):
@@ -58,3 +68,55 @@ class ResetPasswordView(generics.CreateAPIView):
             user.save()
             return Response({"message": "Password updated successfully."})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PasswordResetRequestView(APIView):
+    permissions_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data["email"]
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response({"detail": "If this email exists, a reset link will be sent."}, status=status.HTTP_200_OK)
+
+            token = default_token_generator.make_token(user)
+            reset_url = f"{request.scheme}://{request.get_host()}/api/password-reset/confirm/?uid={user.pk}&token={token}"
+
+            send_mail(
+                "Password Reset Request",
+                f"Click the link to reset your password: {reset_url}",
+                "no-reply@example.com",
+                [email],
+                fail_silently=False,
+            )
+
+            return Response({"detail": "Password reset link sent!"}, status=status.HTTP_200_OK)
+        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+
+class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        if serializer.is_valid():
+            user_id = serializer.validated_data["user_id"]
+            token = serializer.validated_data["token"]
+            new_password = serializer.validated_data["new_password"]
+
+            try:
+                user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                return Response({"detail": "Invalid user."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Validate the token
+            if not default_token_generator.check_token(user, token):
+                return Response({"detail": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Update password
+            user.set_password(new_password)
+            user.save()
+
+            return Response({"detail": "Password reset successfully."}, status=status.HTTP_200_OK)
+        return Response

@@ -22,7 +22,7 @@ class UserRegistrationViewSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
-class PasswordResetSerializer(serializers.ModelSerializer):
+class PasswordResetSerializer(serializers.Serializer):
     old_password = serializers.CharField(write_only=True, required=True)
     new_password = serializers.CharField(write_only=True, required=True)
 
@@ -44,3 +44,11 @@ class PasswordResetSerializer(serializers.ModelSerializer):
         user.set_password(self.validated_data["new_password"])
         user.save()
         return user
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(min_length=8, write_only=True)
