@@ -10,8 +10,8 @@ class PlantSerializer(serializers.ModelSerializer):
         fields = "__all__"
         # fields = ["id", "name", "last_watered", "watering_frequency", "notes"]
 
-class UserRegistrationViewSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True) # We don"t want to return the password in the response
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True) # We don't want to return the password in the response
 
     class Meta:
         model = User

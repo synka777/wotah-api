@@ -101,8 +101,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"}, # No all-numeric passwords
 ]
 
-# Authentication
-
 from datetime import timedelta
 
 SIMPLE_JWT = {
@@ -112,6 +110,8 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,  # Blacklist old refresh tokens
     'AUTH_HEADER_TYPES': ('Bearer'),  # Token format: Authorization: Bearer <token>
 }
+
+# AUTH_USER_MODEL = 'api.User'  # This points to a custom user model
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -123,9 +123,22 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": (
         "rest_framework.renderers.JSONRenderer",  # Disables HTML browsable API
     ),
-}
+    "REST_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle", # Limits for unauthenticated users
+        "rest_framework.throttling.UserRateThrottle", # Limits for authenticated users
+        "rest_framework.throttling.ScopedRateThrottle", # Allows per-view custom throttling
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        # General API Throttles
+        "anon": "10/minute",  # Unauthenticated users: Max 10 requests per minute globally
+        "user": "30/minute",  # Authenticated users: Max 30 requests per minute globally
 
-# AUTH_USER_MODEL = 'api.User'  # This points to a custom user model
+        # Password Reset Throttles (Scoped)
+        "password_reset_request": "5/hour",  # Unauthenticated users: Max 5 reset requests per hour
+        "password_reset_confirm": "10/hour",  # Unauthenticated users: Max 10 confirmations per hour
+        "password_reset": "10/hour",  # Authenticated users: Max 10 password reset requests per hour
+    }
+}
 
 # SMTP configuration
 

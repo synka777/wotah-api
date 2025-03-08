@@ -2,12 +2,13 @@ from rest_framework import generics, status
 from .models import Plant
 from .serializers import (
     PlantSerializer,
-    UserRegistrationViewSerializer,
+    UserRegistrationSerializer,
     PasswordResetSerializer,
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer
 )
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.throttling import ScopedRateThrottle
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from rest_framework.response import Response
@@ -41,7 +42,7 @@ class PlantRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 class UserRegistrationView(generics.CreateAPIView):
     permission_classes = [AllowAny]  # This allows unauthenticated access to this view
     queryset = User.objects.all()
-    serializer_class = UserRegistrationViewSerializer
+    serializer_class = UserRegistrationSerializer
 
     def get(self, request, *args, **kwargs):
         # Send help text as part of the response when getting a Get request
@@ -55,6 +56,8 @@ class UserRegistrationView(generics.CreateAPIView):
 class ResetPasswordView(generics.CreateAPIView):
     serializer_class = PasswordResetSerializer
     permission_classes = [IsAuthenticated]  # User must be logged in to reset their password
+    throttle_classes = [ScopedRateThrottle] # Enable throttling
+    throttle_scope = "password_reset" # Use our custom rule
 
     def get_object(self):
         # Return the logged-in user
@@ -71,6 +74,8 @@ class ResetPasswordView(generics.CreateAPIView):
 
 class PasswordResetRequestView(APIView):
     permissions_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "password_reset_request" # Each view has its own throttling scope
 
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
@@ -97,6 +102,8 @@ class PasswordResetRequestView(APIView):
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "password_reset_confirm"
 
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
