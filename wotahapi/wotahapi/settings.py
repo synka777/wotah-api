@@ -44,9 +44,12 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist", # Necessary since we've enabled token blacklisting
+    # "corsheaders", # Disabled as this API is being set up to be used by a mobile app
 ]
 
 MIDDLEWARE = [
+    # "myapp.middleware.CustomCORSAccessMiddleware",
+    # "myapp.middleware.CustomCSRFMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -110,6 +113,20 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,  # Blacklist old refresh tokens
     'AUTH_HEADER_TYPES': ('Bearer'),  # Token format: Authorization: Bearer <token>
 }
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",  # Frontend running on localhost:3000
+#     "http://127.0.0.1:3000",
+# ]
+
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+# ]
+
+# CORS_ALLOW_ALL_ORIGINS = True # Don't use this setting in production
+# CSRF_COOKIE_HTTPONLY = False  # Allows frontend JavaScript to read CSRF cookie
+# CSRF_USE_SESSIONS = True  # Uses session-based CSRF tokens instead of cookies
 
 # AUTH_USER_MODEL = 'api.User'  # This points to a custom user model
 
