@@ -82,7 +82,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "wotahapi.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -92,7 +91,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -147,8 +145,9 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_THROTTLE_RATES": {
         # General API Throttles
-        "anon": "10/minute",  # Unauthenticated users: Max 10 requests per minute globally
-        "user": "30/minute",  # Authenticated users: Max 30 requests per minute globally
+        "anon": "10/minute", # Unauthenticated users: Max 10 requests per minute globally
+        "user": "30/minute", # Authenticated users: Max 30 requests per minute globally
+        "login": "5/minute",
 
         # Password Reset Throttles (Scoped)
         "password_reset_request": "5/hour",  # Unauthenticated users: Max 5 reset requests per hour

@@ -7,8 +7,9 @@ from .serializers import (
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer
 )
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.throttling import ScopedRateThrottle
+from rest_framework.throttling import ScopedRateThrottle, AnonRateThrottle
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from rest_framework.response import Response
@@ -38,6 +39,12 @@ class PlantRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         return Plant.objects.filter(user=self.request.user)
 
 # User views
+
+class LoginThrottle(AnonRateThrottle):
+    rate = "5/minute" # Limit to 5 login attempts per minute
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    throttle_classes = [LoginThrottle]
 
 class UserRegistrationView(generics.CreateAPIView):
     permission_classes = [AllowAny]  # This allows unauthenticated access to this view
