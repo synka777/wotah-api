@@ -62,7 +62,7 @@ MIDDLEWARE = [
 # Authorize the local network to access the API
 MIDDLEWARE.insert(1, "api.middlewares.AllowLocalNetworkMiddleware")
 
-ROOT_URLCONF = "wotahapi.urls"
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
@@ -80,7 +80,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "wotahapi.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
