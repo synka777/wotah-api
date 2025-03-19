@@ -1,0 +1,6 @@
+django
+djangorestframework
+environs
+djangorestframework-simplejwt
+django-cors-headers
+gunicorn
