@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: .. # Go up one folder to find the files needed for the config
+      dockerfile: docker/Dockerfile # Necessary given that our docker conf is in docker/
+    container_name: wotah-container
+    command: python3 manage.py runserver 0.0.0.0:8000
+    ports:
+    - 8000:8000
+    volumes:
+    - ..:/app # local:container; Go up again as we're in docker/
