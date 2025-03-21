@@ -2,14 +2,29 @@
 
 [![](https://img.shields.io/static/v1?label=Python&message=v3.12&color=teal)](#) [![](https://img.shields.io/static/v1?label=Django&message=v5.1.7&color=purple)](#)
 [![](https://img.shields.io/static/v1?label=Django%20Rest%20Framework&message=v3.15.2)](#)
-### Overview
+### 🔍 Overview
 
 This API allows users to manage their houseplants and associated watering schedules, helping them track the last time each plant was watered or fertilized.
 
 Please note that this project is a work in progress (WIP) meant to be used as a training ground.
 This API is designed to work alongside a mobile app, which is still in development. You can find the app  [here](https://github.com/synka777/wotah-app "here").
 
-### Authentication Workflow
+### ❓ How to use
+
+##### Development mode
+To start developing install Docker on your system, then:
+```bash
+docker-compose -d -f docker/docker-compose.yml up
+```
+
+##### Production mode
+To deploy the app in production mode:
+```bash
+docker build -f docker/Dockerfile --target prod -t wotah-img .
+docker run -d -p 8000:8000 --name wotah-container wotah-img
+```
+
+### 👤 Authentication Workflow
 
 The API uses token-based authentication with JSON Web Tokens (JWT). Here’s the general authentication workflow:
 
@@ -19,7 +34,7 @@ The API uses token-based authentication with JSON Web Tokens (JWT). Here’s the
 4. If the token expires, the user can refresh it.
 5. If the user forgets their password, they can request a password reset.
 
-### Endpoints Overview
+### 🟢 Available endpoints
 
 ##### 1. User Registration
 
@@ -143,7 +158,7 @@ Request Example (Delete Plant):
 curl -X DELETE http://localhost:8000/api/plants/1/ \
      -H "Authorization: Bearer your_jwt_access_token"
 ```
-### Notes
+### 📄 Notes
 
 Authentication: Except for registration, login, and password reset request, all other endpoints require the Authorization: Bearer <token> header.
 

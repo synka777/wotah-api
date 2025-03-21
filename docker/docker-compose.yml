@@ -3,6 +3,7 @@ services:
     build:
       context: .. # Go up one folder to find the files needed for the config
       dockerfile: docker/Dockerfile # Necessary given that our docker conf is in docker/
+      target: base # Specify the "base" stage for development
     container_name: wotah-container
     command: python3 manage.py runserver 0.0.0.0:8000
     ports:
